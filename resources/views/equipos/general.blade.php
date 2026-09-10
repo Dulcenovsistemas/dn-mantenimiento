@@ -19,6 +19,7 @@
         </div>
 
 
+       
         {{-- Áreas --}}
         @forelse($sucursal->areas as $area)
 
@@ -29,26 +30,54 @@
 
                     <div class="flex items-center justify-between">
 
-                        <div>
+                        {{-- Botón para expandir/contraer --}}
+                        <button
+                            type="button"
+                            onclick="toggleArea('{{ $area->id }}')"
+                            class="flex items-center gap-3 text-left flex-1"
+                        >
 
-                            <h2 class="text-lg font-semibold text-slate-800">
-                                {{ $area->nombre }}
-                            </h2>
+                            {{-- Flecha --}}
+                            <svg
+                                id="area-arrow-{{ $area->id }}"
+                                class="w-5 h-5 text-slate-500 transition-transform duration-200"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                            >
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2"
+                                    d="M9 5l7 7-7 7"
+                                />
+                            </svg>
 
-                            <p class="text-xs text-slate-500 mt-1">
-                                {{ $area->equipos->count() }}
-                                {{ $area->equipos->count() === 1 ? 'equipo' : 'equipos' }}
-                            </p>
 
-                        </div>
+                            <div>
 
-                        {{-- Nuevo equipo para esta área --}}
+                                <h2 class="text-lg font-semibold text-slate-800">
+                                    {{ $area->nombre }}
+                                </h2>
+
+                                <p class="text-xs text-slate-500 mt-1">
+                                    {{ $area->equipos->count() }}
+                                    {{ $area->equipos->count() === 1 ? 'equipo' : 'equipos' }}
+                                </p>
+
+                            </div>
+
+                        </button>
+
+
+                        {{-- Nuevo equipo --}}
                         <a
                             href="{{ route(
                                 'sucursales.areas.equipos.create',
                                 [$sucursal, $area]
                             ) }}"
-                            class="inline-flex items-center gap-2 rounded-lg bg-slate-800 px-4 py-2 text-sm font-medium text-white hover:bg-slate-700">
+                            class="inline-flex items-center gap-2 rounded-lg bg-slate-800 px-4 py-2 text-sm font-medium text-white hover:bg-slate-700"
+                        >
 
                             <span>+</span>
                             Nuevo equipo
@@ -60,119 +89,126 @@
                 </div>
 
 
-                {{-- Equipos --}}
-                @if($area->equipos->count())
+                {{-- Contenido del área --}}
+                <div
+                    id="area-content-{{ $area->id }}"
+                    class="hidden"
+                >
 
-                    <div class="overflow-x-auto">
+                    {{-- Equipos --}}
+                    @if($area->equipos->count())
 
-                        <table class="w-full text-sm">
+                        <div class="overflow-x-auto">
 
-                            <thead class="border-b border-slate-200">
+                            <table class="w-full text-sm">
 
-                                <tr>
+                                <thead class="border-b border-slate-200">
 
-                                    <th class="px-6 py-3 text-left font-semibold text-slate-600">
-                                        Equipo
-                                    </th>
+                                    <tr>
 
-                                    <th class="px-6 py-3 text-left font-semibold text-slate-600">
-                                        Marca / Modelo
-                                    </th>
+                                        <th class="px-6 py-3 text-left font-semibold text-slate-600">
+                                            Equipo
+                                        </th>
 
-                                    <th class="px-6 py-3 text-left font-semibold text-slate-600">
-                                        Número de serie
-                                    </th>
+                                        <th class="px-6 py-3 text-left font-semibold text-slate-600">
+                                            Marca / Modelo
+                                        </th>
 
-                                    <th class="px-6 py-3 text-left font-semibold text-slate-600">
-                                        Responsable
-                                    </th>
+                                        <th class="px-6 py-3 text-left font-semibold text-slate-600">
+                                            Número de serie
+                                        </th>
 
-                                    <th class="px-6 py-3 text-right font-semibold text-slate-600">
-                                        Acciones
-                                    </th>
+                                        <th class="px-6 py-3 text-left font-semibold text-slate-600">
+                                            Responsable
+                                        </th>
 
-                                </tr>
-
-                            </thead>
-
-                            <tbody class="divide-y divide-slate-100">
-
-                                @foreach($area->equipos as $equipo)
-
-                                    <tr class="hover:bg-slate-50">
-
-                                        <td class="px-6 py-4 font-medium text-slate-800">
-                                            {{ $equipo->nombre }}
-                                        </td>
-
-                                        <td class="px-6 py-4 text-slate-600">
-                                            {{ $equipo->marca_modelo ?: '—' }}
-                                        </td>
-
-                                        <td class="px-6 py-4 text-slate-600">
-                                            {{ $equipo->numero_serie ?: '—' }}
-                                        </td>
-
-                                        <td class="px-6 py-4 text-slate-600">
-                                            {{ $equipo->responsable ?: '—' }}
-                                        </td>
-
-                                        <td class="px-6 py-4 text-right">
-
-                                            <a
-                                                href="{{ route(
-                                                    'sucursales.areas.equipos.show',
-                                                    [$sucursal, $area, $equipo]
-                                                ) }}"
-                                                class="text-blue-600 hover:text-blue-800 font-medium">
-
-                                                Ver
-
-                                            </a>
-
-                                        </td>
+                                        <th class="px-6 py-3 text-right font-semibold text-slate-600">
+                                            Acciones
+                                        </th>
 
                                     </tr>
 
-                                @endforeach
+                                </thead>
 
-                            </tbody>
 
-                        </table>
+                                <tbody class="divide-y divide-slate-100">
 
-                    </div>
+                                    @foreach($area->equipos as $equipo)
 
-                @else
+                                        <tr class="hover:bg-slate-50">
 
-                    {{-- Área sin equipos --}}
-                    <div class="px-6 py-10 text-center">
+                                            <td class="px-6 py-4 font-medium text-slate-800">
+                                                {{ $equipo->nombre }}
+                                            </td>
 
-                        <div class="text-3xl mb-2">
-                            🛠️
+                                            <td class="px-6 py-4 text-slate-600">
+                                                {{ $equipo->marca_modelo ?: '—' }}
+                                            </td>
+
+                                            <td class="px-6 py-4 text-slate-600">
+                                                {{ $equipo->numero_serie ?: '—' }}
+                                            </td>
+
+                                            <td class="px-6 py-4 text-slate-600">
+                                                {{ $equipo->responsable ?: '—' }}
+                                            </td>
+
+                                            <td class="px-6 py-4 text-right">
+
+                                                <a
+                                                    href="{{ route(
+                                                        'sucursales.areas.equipos.show',
+                                                        [$sucursal, $area, $equipo]
+                                                    ) }}"
+                                                    class="text-blue-600 hover:text-blue-800 font-medium"
+                                                >
+                                                    Ver
+                                                </a>
+
+                                            </td>
+
+                                        </tr>
+
+                                    @endforeach
+
+                                </tbody>
+
+                            </table>
+
                         </div>
 
-                        <p class="font-medium text-slate-700">
-                            No hay equipos registrados
-                        </p>
+                    @else
 
-                        <p class="text-sm text-slate-500 mt-1">
-                            Esta área todavía no tiene equipos.
-                        </p>
+                        {{-- Área sin equipos --}}
+                        <div class="px-6 py-10 text-center">
 
-                        <a
-                            href="{{ route(
-                                'sucursales.areas.equipos.create',
-                                [$sucursal, $area]
-                            ) }}"
-                            class="inline-block mt-4 text-blue-600 hover:text-blue-800 font-medium">
+                            <div class="text-3xl mb-2">
+                                🛠️
+                            </div>
 
-                            Agregar el primer equipo →
+                            <p class="font-medium text-slate-700">
+                                No hay equipos registrados
+                            </p>
 
-                        </a>
+                            <p class="text-sm text-slate-500 mt-1">
+                                Esta área todavía no tiene equipos.
+                            </p>
 
-                    </div>
+                            <a
+                                href="{{ route(
+                                    'sucursales.areas.equipos.create',
+                                    [$sucursal, $area]
+                                ) }}"
+                                class="inline-block mt-4 text-blue-600 hover:text-blue-800 font-medium"
+                            >
+                                Agregar el primer equipo →
+                            </a>
 
-                @endif
+                        </div>
+
+                    @endif
+
+                </div>
 
             </div>
 
@@ -262,5 +298,25 @@
         </div>
 
     </div>
+
+    <script>
+
+    function toggleArea(areaId) {
+
+        const content = document.getElementById(
+            'area-content-' + areaId
+        );
+
+        const arrow = document.getElementById(
+            'area-arrow-' + areaId
+        );
+
+        content.classList.toggle('hidden');
+
+        arrow.classList.toggle('rotate-90');
+
+    }
+
+</script>
 
 </x-app-layout>

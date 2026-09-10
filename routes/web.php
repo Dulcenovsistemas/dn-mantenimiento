@@ -6,6 +6,7 @@ use App\Http\Controllers\AreaController;
 use App\Http\Controllers\EquipoController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\OrdenTrabajoController;
+use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Models\Area;
 use App\Models\Sucursal;
 use Illuminate\Http\Request;
@@ -21,6 +22,9 @@ Route::get('/dashboard', function () {
 
 
 Route::middleware('auth')->group(function () {
+
+    Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])
+        ->name('logout');
 
     // =========================================================
     // PERFIL
