@@ -7,6 +7,9 @@ use App\Models\Equipo;
 use App\Models\Sucursal;
 use Illuminate\Http\Request;
 
+use App\Imports\EquiposImport;
+use Maatwebsite\Excel\Facades\Excel;
+
 class EquipoController extends Controller
 {
     /**
@@ -225,5 +228,37 @@ class EquipoController extends Controller
         ])->findOrFail($sucursalId);
 
         return view('equipos.general', compact('sucursal'));
+    }
+
+    public function importar(Request $request, Sucursal $sucursal, Area $area)
+    {
+        abort_unless(
+            $area->sucursal_id === $sucursal->id,
+            404
+        );
+
+        $request->validate([
+            'archivo' => [
+                'required',
+                'file',
+                'mimes:xlsx,xls',
+            ],
+        ]);
+
+        Excel::import(
+            new EquiposImport(
+                $sucursal->id,
+                $area->id,
+                $area->responsable
+            ),
+            $request->file('archivo')
+        );
+
+        return redirect()
+            ->route(
+                'sucursales.areas.equipos.index',
+                [$sucursal, $area]
+            )
+            ->with('success', 'Equipos importados correctamente.');
     }
 }

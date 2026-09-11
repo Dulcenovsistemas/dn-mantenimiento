@@ -76,6 +76,11 @@ Route::middleware('auth')->group(function () {
         ])
         ->scoped();
 
+    Route::post(
+        'sucursales/{sucursal}/areas/{area}/equipos/importar',
+        [EquipoController::class, 'importar']
+    )->name('sucursales.areas.equipos.importar');
+
 
     // =========================================================
     // USUARIOS

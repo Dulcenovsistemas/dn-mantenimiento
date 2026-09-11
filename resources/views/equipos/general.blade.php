@@ -70,19 +70,32 @@
                         </button>
 
 
-                        {{-- Nuevo equipo --}}
-                        <a
-                            href="{{ route(
-                                'sucursales.areas.equipos.create',
-                                [$sucursal, $area]
-                            ) }}"
-                            class="inline-flex items-center gap-2 rounded-lg bg-slate-800 px-4 py-2 text-sm font-medium text-white hover:bg-slate-700"
-                        >
+                        {{-- Acciones del área --}}
+                        <div class="flex items-center gap-2">
 
-                            <span>+</span>
-                            Nuevo equipo
+                            {{-- Importar Excel --}}
+                            <button
+                                type="button"
+                                onclick="abrirModalImportar('{{ $area->id }}')"
+                                class="inline-flex items-center gap-2 rounded-lg bg-green-600 px-4 py-2 text-sm font-medium text-white hover:bg-green-700"
+                            >
+                                <span>↑</span>
+                                Importar Excel
+                            </button>
 
-                        </a>
+                            {{-- Nuevo equipo --}}
+                            <a
+                                href="{{ route(
+                                    'sucursales.areas.equipos.create',
+                                    [$sucursal, $area]
+                                ) }}"
+                                class="inline-flex items-center gap-2 rounded-lg bg-slate-800 px-4 py-2 text-sm font-medium text-white hover:bg-slate-700"
+                            >
+                                <span>+</span>
+                                Nuevo equipo
+                            </a>
+
+                        </div>
 
                     </div>
 
@@ -299,23 +312,159 @@
 
     </div>
 
+    {{-- Modal para importar Excel --}}
+    <div
+        id="modalImportarExcel"
+        class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4"
+    >
+
+        <div class="w-full max-w-md bg-white rounded-2xl shadow-xl">
+
+            {{-- Encabezado --}}
+            <div class="px-6 py-5 border-b border-slate-200">
+
+                <div class="flex items-center justify-between">
+
+                    <div>
+                        <h2 class="text-lg font-semibold text-slate-800">
+                            Importar equipos
+                        </h2>
+
+                        <p class="text-sm text-slate-500 mt-1">
+                            Selecciona el archivo de Excel que deseas importar.
+                        </p>
+                    </div>
+
+                    <button
+                        type="button"
+                        onclick="cerrarModalImportar()"
+                        class="text-slate-400 hover:text-slate-600 text-xl"
+                    >
+                        ×
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            {{-- Formulario --}}
+            <form
+                id="formImportarExcel"
+                method="POST"
+                enctype="multipart/form-data"
+            >
+
+                @csrf
+
+                <div class="p-6">
+
+                    <label
+                        for="archivoExcel"
+                        class="block text-sm font-medium text-slate-700 mb-2"
+                    >
+                        Archivo Excel
+                    </label>
+
+                    <input
+                        type="file"
+                        id="archivoExcel"
+                        name="archivo"
+                        accept=".xlsx,.xls"
+                        required
+                        class="block w-full text-sm text-slate-600
+                            border border-slate-300 rounded-lg
+                            file:mr-4 file:py-2 file:px-4
+                            file:rounded-lg file:border-0
+                            file:text-sm file:font-medium
+                            file:bg-slate-100 file:text-slate-700
+                            hover:file:bg-slate-200"
+                    >
+
+                    <p class="text-xs text-slate-500 mt-2">
+                        Formatos permitidos: .xlsx y .xls
+                    </p>
+
+                </div>
+
+
+                {{-- Botones --}}
+                <div class="px-6 py-4 bg-slate-50 border-t border-slate-200 flex justify-end gap-3">
+
+                    <button
+                        type="button"
+                        onclick="cerrarModalImportar()"
+                        class="px-4 py-2 rounded-lg border border-slate-300 text-slate-700 hover:bg-white"
+                    >
+                        Cancelar
+                    </button>
+
+                    <button
+                        type="submit"
+                        class="px-4 py-2 rounded-lg bg-green-600 text-white font-medium hover:bg-green-700"
+                    >
+                        Importar equipos
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
     <script>
 
-    function toggleArea(areaId) {
+function toggleArea(areaId) {
 
-        const content = document.getElementById(
-            'area-content-' + areaId
-        );
+    const content = document.getElementById(
+        'area-content-' + areaId
+    );
 
-        const arrow = document.getElementById(
-            'area-arrow-' + areaId
-        );
+    const arrow = document.getElementById(
+        'area-arrow-' + areaId
+    );
 
-        content.classList.toggle('hidden');
+    content.classList.toggle('hidden');
 
-        arrow.classList.toggle('rotate-90');
+    arrow.classList.toggle('rotate-90');
 
-    }
+}
+
+
+function abrirModalImportar(areaId) {
+
+    const modal = document.getElementById(
+        'modalImportarExcel'
+    );
+
+    const formulario = document.getElementById(
+        'formImportarExcel'
+    );
+
+    formulario.action =
+        "{{ route('sucursales.areas.equipos.importar', [$sucursal, '__AREA__']) }}"
+        .replace('__AREA__', areaId);
+
+    modal.classList.remove('hidden');
+}
+
+
+function cerrarModalImportar() {
+
+    const modal = document.getElementById(
+        'modalImportarExcel'
+    );
+
+    const formulario = document.getElementById(
+        'formImportarExcel'
+    );
+
+    formulario.reset();
+
+    modal.classList.add('hidden');
+}
 
 </script>
 
