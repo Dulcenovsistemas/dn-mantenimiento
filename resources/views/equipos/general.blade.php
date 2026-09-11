@@ -166,19 +166,58 @@
                                                 {{ $equipo->responsable ?: '—' }}
                                             </td>
 
-                                            <td class="px-6 py-4 text-right">
+                                           <td class="px-6 py-4 text-right">
 
-                                                <a
-                                                    href="{{ route(
-                                                        'sucursales.areas.equipos.show',
-                                                        [$sucursal, $area, $equipo]
-                                                    ) }}"
-                                                    class="text-blue-600 hover:text-blue-800 font-medium"
-                                                >
-                                                    Ver
-                                                </a>
+    <div class="flex items-center justify-end gap-4">
 
-                                            </td>
+        {{-- Ver --}}
+        <a
+            href="{{ route(
+                'sucursales.areas.equipos.show',
+                [$sucursal, $area, $equipo]
+            ) }}"
+            class="text-blue-600 hover:text-blue-800 font-medium"
+        >
+            Ver
+        </a>
+
+        {{-- Editar --}}
+        <a
+            href="{{ route(
+                'sucursales.areas.equipos.edit',
+                [$sucursal, $area, $equipo]
+            ) }}"
+            class="text-amber-600 hover:text-amber-800 font-medium"
+        >
+            Editar
+        </a>
+
+        {{-- Eliminar --}}
+        <form
+            action="{{ route(
+                'sucursales.areas.equipos.destroy',
+                [$sucursal, $area, $equipo]
+            ) }}"
+            method="POST"
+            class="inline"
+            onsubmit="return confirm('¿Estás segura de eliminar este equipo?');"
+        >
+
+            @csrf
+            @method('DELETE')
+
+            <button
+                type="submit"
+                class="text-red-600 hover:text-red-800 font-medium"
+            >
+                Eliminar
+            </button>
+
+        </form>
+
+    </div>
+
+</td>
 
                                         </tr>
 
